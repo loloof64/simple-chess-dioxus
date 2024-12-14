@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 
 mod gui;
-use gui::chess_board::{Chessboard, ChessboardParams};
+use gui::chess_board::{Chessboard, ChessboardColors, ChessboardParams};
 
 const FAVICON: Asset = asset!("/assets/favicon.ico");
 const MAIN_CSS: Asset = asset!("/assets/main.css");
@@ -22,12 +22,13 @@ fn App() -> Element {
 #[component]
 fn MainZone() -> Element {
     rsx! {
-        div {  
+        div {
             class: "main-zone",
             Chessboard{
                 params: ChessboardParams {
-                    size: "90vmin".to_string(), 
+                    size: "90vmin".to_string(),
                     position: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR".to_string(),
+                    colors: ChessboardColors::default()
                  }
             }
         }
