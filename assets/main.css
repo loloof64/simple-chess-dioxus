@@ -1,0 +1,24 @@
+/* App-wide styling */
+html, body, #main {
+    width: 100%;
+    height: 100%;
+}
+
+
+body {
+    margin: 0;
+    background-color: #0f1116;
+    color: #ffffff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+
+.main-zone {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
