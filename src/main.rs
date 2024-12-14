@@ -25,7 +25,10 @@ fn MainZone() -> Element {
         div {  
             class: "main-zone",
             Chessboard{
-                params: ChessboardParams { position: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR".to_string() }
+                params: ChessboardParams {
+                    size: "90vmin".to_string(), 
+                    position: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR".to_string(),
+                 }
             }
         }
     }
