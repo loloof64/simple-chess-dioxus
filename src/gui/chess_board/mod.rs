@@ -2,12 +2,27 @@ use std::rc::Rc;
 
 use dioxus::prelude::*;
 
+const WP: Asset = asset!("/assets/chess_vectors/Chess_plt45.svg");
+const WN: Asset = asset!("/assets/chess_vectors/Chess_nlt45.svg");
+const WB: Asset = asset!("/assets/chess_vectors/Chess_blt45.svg");
+const WR: Asset = asset!("/assets/chess_vectors/Chess_rlt45.svg");
+const WQ: Asset = asset!("/assets/chess_vectors/Chess_qlt45.svg");
+const WK: Asset = asset!("/assets/chess_vectors/Chess_klt45.svg");
+
+const BP: Asset = asset!("/assets/chess_vectors/Chess_pdt45.svg");
+const BN: Asset = asset!("/assets/chess_vectors/Chess_ndt45.svg");
+const BB: Asset = asset!("/assets/chess_vectors/Chess_bdt45.svg");
+const BR: Asset = asset!("/assets/chess_vectors/Chess_rdt45.svg");
+const BQ: Asset = asset!("/assets/chess_vectors/Chess_qdt45.svg");
+const BK: Asset = asset!("/assets/chess_vectors/Chess_kdt45.svg");
+
 #[derive(Debug, Clone)]
 struct CellParams {
     color: String,
     coord_color: String,
     file_coord: Option<String>,
     rank_coord: Option<String>,
+    value: Option<String>,
 }
 
 #[component]
@@ -16,10 +31,12 @@ fn Cell(params: ReadOnlySignal<CellParams>) -> Element {
     let coord_margin_proportion = 0.025;
     let mut node_ref: Signal<Option<Rc<MountedData>>> = use_signal(|| None);
 
-    let color = params.read().clone().color;
-    let coord_color = params.read().clone().coord_color;
-    let file_coord = params.read().clone().file_coord;
-    let rank_coord = params.read().clone().rank_coord;
+    let params = params.read().clone();
+    let color = params.color;
+    let coord_color = params.coord_color;
+    let file_coord = params.file_coord;
+    let rank_coord = params.rank_coord;
+    let value = params.value;
 
     let font_size = use_resource(move || async move {
         match node_ref() {
@@ -117,6 +134,32 @@ fn Cell(params: ReadOnlySignal<CellParams>) -> Element {
                  }
 
             }
+            if value.is_some() {
+                div {
+                    position: "absolute",
+                    width: "100%",
+                    height: "100%",
+                    img{
+                        src: match value.clone().unwrap().as_str() {
+                            "P" => WP,
+                            "N" => WN,
+                            "B" => WB,
+                            "R" => WR,
+                            "Q" => WQ,
+                            "K" => WK,
+                            "p" => BP,
+                            "n" => BN,
+                            "b" => BB,
+                            "r" => BR,
+                            "q" => BQ,
+                            "k" => BK,
+                            _ => panic!("illegal piece  '{}'", value.unwrap())
+                        },
+                        width: "100%",
+                        height: "100%",
+                    }
+                }
+            }
         }
     }
 }
@@ -145,7 +188,7 @@ pub struct ChessboardParams {
 
 #[component]
 pub fn Chessboard(params: ReadOnlySignal<ChessboardParams>) -> Element {
-    let _position = params.read().clone().position;
+    let position_str = params.read().clone().position;
     let size = params.read().clone().size;
     let colors = params.read().clone().colors;
 
@@ -164,11 +207,50 @@ pub fn Chessboard(params: ReadOnlySignal<ChessboardParams>) -> Element {
                             coord_color: if (row + col) % 2 == 0 { colors.black_cell.clone() } else { colors.white_cell.clone() },
                             file_coord: if row == 7 { Some(format!("{}", (char::from_u32(97 + col as u32).unwrap()).to_string())) } else {None},
                             rank_coord: if col == 7 { Some(format!("{}", 8 - row)) } else {None},
+                            value: match position_to_values_array(position_str.clone()) {
+                                Some(position_2) => position_2[row][col].clone(),
+                                _ => panic!("illegal position {}", position_str.clone()),
+                            },
                         }
                     }
                 }
             }
         }
 
+    }
+}
+
+fn position_to_values_array(position_str: String) -> Option<[[Option<String>; 8]; 8]> {
+    if position_str.is_empty() {
+        return None;
+    }
+    let board_part = position_str.split_whitespace().nth(0);
+    match board_part {
+        Some(board_part) => {
+            let board_part = board_part.to_string();
+            let lines = board_part.split("/");
+            if lines.clone().count() == 8 {
+                let mut value: [[Option<String>; 8]; 8] = Default::default();
+
+                for (i, line) in lines.enumerate() {
+                    let mut j = 0;
+                    for cell in line.chars() {
+                        if let Ok(num) = cell.to_string().parse::<usize>() {
+                            for _ in 0..num {
+                                value[i][j] = None;
+                                j += 1;
+                            }
+                        } else {
+                            value[i][j] = Some(cell.to_string());
+                            j += 1;
+                        }
+                    }
+                }
+                Some(value)
+            } else {
+                None
+            }
+        }
+        _ => None,
     }
 }
