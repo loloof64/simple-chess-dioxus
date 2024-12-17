@@ -184,13 +184,16 @@ pub struct ChessboardParams {
     pub position: String,
     pub size: String,
     pub colors: ChessboardColors,
+    pub reversed: bool,
 }
 
 #[component]
 pub fn Chessboard(params: ReadOnlySignal<ChessboardParams>) -> Element {
-    let position_str = params.read().clone().position;
-    let size = params.read().clone().size;
-    let colors = params.read().clone().colors;
+    let params = params.read().clone();
+    let position_str = params.position;
+    let size = params.size;
+    let colors = params.colors;
+    let reversed = params.reversed;
 
     rsx! {
         div {
@@ -205,10 +208,10 @@ pub fn Chessboard(params: ReadOnlySignal<ChessboardParams>) -> Element {
                         params: CellParams {
                             color: if (row + col) % 2 == 0 { colors.white_cell.clone() } else { colors.black_cell.clone() },
                             coord_color: if (row + col) % 2 == 0 { colors.black_cell.clone() } else { colors.white_cell.clone() },
-                            file_coord: if row == 7 { Some(format!("{}", (char::from_u32(97 + col as u32).unwrap()).to_string())) } else {None},
-                            rank_coord: if col == 7 { Some(format!("{}", 8 - row)) } else {None},
+                            file_coord: if row == 7 { Some(format!("{}", (char::from_u32(97 + if reversed {7-col} else {col} as u32).unwrap()).to_string())) } else {None},
+                            rank_coord: if col == 7 { Some(format!("{}", if reversed {row+1} else {8 - row})) } else {None},
                             value: match position_to_values_array(position_str.clone()) {
-                                Some(position_2) => position_2[row][col].clone(),
+                                Some(position_2) => position_2[if reversed {7-row} else  {row}][if reversed {7-col} else {col}].clone(),
                                 _ => panic!("illegal position {}", position_str.clone()),
                             },
                         }
