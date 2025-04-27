@@ -31,12 +31,16 @@ fn MainZone() -> Element {
             div {
                 class: "buttons-zone",
                 button {
+                    class: "button",
                     onclick: move |_event| {board_reversed.set(!board_reversed());},
                     Icon {
-                        width: 20,
-                        height: 20,
+                        class: "button-icon",
                         icon: LdArrowUpDown,
                     }
+                },
+                div {
+                    class: "button turn-button",
+                    background_color: "white",
                 }
             }
             Chessboard{
