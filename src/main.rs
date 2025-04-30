@@ -6,6 +6,8 @@ use dioxus_free_icons::Icon;
 mod gui;
 use gui::chess_board::{Chessboard, ChessboardColors, ChessboardParams};
 
+use chess::Board;
+
 const FAVICON: Asset = asset!("/assets/favicon.ico");
 const MAIN_CSS: Asset = asset!("/assets/main.css");
 
@@ -25,6 +27,7 @@ fn App() -> Element {
 #[component]
 fn MainZone() -> Element {
     let mut board_reversed = use_signal(|| false);
+    let board_logic = use_signal(|| Board::default());
     rsx! {
         div {
             class: "main-zone",
@@ -46,7 +49,7 @@ fn MainZone() -> Element {
             Chessboard{
                 params: ChessboardParams {
                     size: "90vmin".to_string(),
-                    position: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR".to_string(),
+                    position: board_logic.read().to_string(),
                     colors: ChessboardColors::default(),
                     reversed: board_reversed(),
                  }
