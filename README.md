@@ -2,6 +2,10 @@
 
 A simple chess application against the engine.
 
+## Developers
+
+Don't forget to [install Dioxus](https://dioxuslabs.com/learn/0.7/getting_started/).
+
 ## Credits
 
 ### images
